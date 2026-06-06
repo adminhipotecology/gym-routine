@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-type ExerciseType = "compound" | "isolation" | "core";
+type ExerciseType = "compound" | "isolation" | "core" | "cardio";
 
 type IconKey =
   | "squat"
@@ -18,7 +18,12 @@ type IconKey =
   | "curl"
   | "hipThrust"
   | "superset"
-  | "chop";
+  | "chop"
+  | "calf"
+  | "cardio"
+  | "legExtension"
+  | "chestFly"
+  | "legCurl";
 
 type Exercise = {
   name: string;
@@ -30,41 +35,62 @@ type Exercise = {
 const ICONS: Record<IconKey, React.ReactNode> = {
   squat: (
     <>
-      <circle cx="12" cy="4.5" r="1.8" />
-      <path d="M12 6.5v4l-3 4.5v5M12 10.5l3 4.5v5" />
-      <path d="M6 9h12" strokeWidth="2.4" />
+      <g className="anim-squat-barbell">
+        <circle cx="12" cy="4.5" r="1.8" />
+        <path d="M6 9h12" strokeWidth="2.4" />
+      </g>
+      <path d="M12 6.5v4l-3 4.5v5M12 10.5l3 4.5v5" className="anim-squat-body" />
     </>
   ),
   bench: (
     <>
       <path d="M3 11h18M5 11v5M19 11v5" />
       <circle cx="12" cy="7.5" r="1.6" />
-      <path d="M8 9l4-1.5 4 1.5" />
+      <path d="M8 9l4-1.5 4 1.5" className="anim-bench-press" />
     </>
   ),
   shoulderPress: (
     <>
       <circle cx="12" cy="4.5" r="1.6" />
-      <path d="M12 6v6M8 12h8M6 4h2M16 4h2M5 3v2M19 3v2M12 12v8M9 20h6" />
+      <path d="M12 6v6M8 12h8M12 12v8M9 20h6" />
+      <g className="anim-press-left" style={{ transformOrigin: "8px 12px" }}>
+        <path d="M8 12V5" />
+        <path d="M7 5h2M6 4v2M10 4v2" strokeWidth="2" />
+      </g>
+      <g className="anim-press-right" style={{ transformOrigin: "16px 12px" }}>
+        <path d="M16 12V5" />
+        <path d="M15 5h2M14 4v2M18 4v2" strokeWidth="2" />
+      </g>
     </>
   ),
   lateralRaise: (
     <>
       <circle cx="12" cy="5" r="1.6" />
-      <path d="M12 6.5v8M4 10h4M16 10h4M3 9v2M21 9v2M12 14.5v6M9 20.5h6" />
+      <path d="M12 6.5v8M12 14.5v6M9 20.5h6" />
+      <g className="anim-raise-left" style={{ transformOrigin: "8px 10px" }}>
+        <path d="M4 10h4" />
+        <path d="M3 9v2" strokeWidth="2.4" />
+      </g>
+      <g className="anim-raise-right" style={{ transformOrigin: "16px 10px" }}>
+        <path d="M16 10h4" />
+        <path d="M21 9v2" strokeWidth="2.4" />
+      </g>
     </>
   ),
   tricep: (
     <>
-      <path d="M5 4h14M5 4v3M19 4v3M12 7v6" />
-      <path d="M9 13h6M10 13l-1 6M14 13l1 6" />
+      <path d="M5 4h14M5 4v3M19 4v3" />
+      <line x1="12" y1="7" x2="12" y2="13" className="anim-tricep-cable" strokeWidth="1.6" />
+      <g className="anim-tricep-rope">
+        <path d="M9 13h6M10 13l-1 6M14 13l1 6" />
+      </g>
     </>
   ),
   core: (
-    <>
+    <g className="anim-core">
       <ellipse cx="12" cy="12" rx="8" ry="5" />
       <path d="M9 10v4M12 9.5v5M15 10v4" />
-    </>
+    </g>
   ),
   deadlift: (
     <>
@@ -125,13 +151,60 @@ const ICONS: Record<IconKey, React.ReactNode> = {
       <path d="M14 7l5 3-3 4" strokeWidth="2" />
     </>
   ),
+  calf: (
+    <>
+      <path d="M10 3v7l-1.5 4.5" />
+      <path d="M10 10l3.5 1.5-1 3.5" />
+      <path d="M6 20.5h11" strokeWidth="2.4" />
+      <path d="M7.5 20.5l1-2M14 18.5l1.5 2" />
+    </>
+  ),
+  cardio: (
+    <>
+      <circle cx="13.5" cy="4.5" r="1.6" />
+      <path d="M13.5 6.5l-2.5 3 2.5 2.5 1.5 4M11 9.5l-3-1M13.5 12l3.5 1" />
+      <path d="M5 20.5h11l2.5-3.5" strokeWidth="2.2" />
+    </>
+  ),
+  legExtension: (
+    <>
+      <circle cx="6.5" cy="6" r="1.6" />
+      <path d="M6.5 7.5v4.5h5" />
+      <path d="M11.5 12l7-3.5" />
+      <path d="M6.5 12v4.5M4.5 18.5h4" />
+      <path d="M18.5 8.5l1.5 2" strokeWidth="2.2" />
+    </>
+  ),
+  chestFly: (
+    <>
+      <circle cx="12" cy="4.5" r="1.6" />
+      <path d="M12 6v7" />
+      <g className="anim-fly-left" style={{ transformOrigin: "12px 8.5px" }}>
+        <path d="M12 8.5l-5-1.5" />
+        <path d="M7 7l-2.5 2.5" />
+      </g>
+      <g className="anim-fly-right" style={{ transformOrigin: "12px 8.5px" }}>
+        <path d="M12 8.5l5-1.5" />
+        <path d="M17 7l2.5 2.5" />
+      </g>
+      <path d="M12 13v6M9 19h6" />
+    </>
+  ),
+  legCurl: (
+    <>
+      <circle cx="5.5" cy="9" r="1.6" />
+      <path d="M5.5 10.5h8.5" />
+      <path d="M14 10.5l3 1.5-1.5 3.5" />
+      <path d="M3.5 13.5h12" strokeWidth="2.2" />
+    </>
+  ),
 };
 
-function ExerciseIcon({ icon, color }: { icon: IconKey; color: string }) {
+function ExerciseIcon({ icon, color, size = 22 }: { icon: IconKey; color: string; size?: number }) {
   return (
     <svg
-      width="22"
-      height="22"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke={color}
@@ -154,7 +227,7 @@ type Day = {
   exercises: Exercise[];
 };
 
-const ROUTINE: Record<"a" | "b" | "c", Day> = {
+const ROUTINE: Record<"a" | "b" | "c" | "d" | "e", Day> = {
   a: {
     label: "Day A",
     sub: "Mon / Push + Legs",
@@ -164,6 +237,7 @@ const ROUTINE: Record<"a" | "b" | "c", Day> = {
     exercises: [
       { name: "Barbell or dumbbell squat", detail: "4 sets × 6–8 reps · 2 min rest", type: "compound", icon: "squat" },
       { name: "Incline dumbbell press", detail: "3 sets × 8–10 reps · 90 s rest", type: "compound", icon: "bench" },
+      { name: "Pec deck or cable flye", detail: "3 sets × 12 reps · 60 s rest", type: "isolation", icon: "chestFly" },
       { name: "Dumbbell shoulder press", detail: "3 sets × 10 reps · 90 s rest", type: "compound", icon: "shoulderPress" },
       { name: "Cable or machine lateral raises", detail: "3 sets × 12–15 reps · 60 s rest", type: "isolation", icon: "lateralRaise" },
       { name: "Tricep pushdowns (rope)", detail: "3 sets × 12 reps · 60 s rest", type: "isolation", icon: "tricep" },
@@ -178,6 +252,7 @@ const ROUTINE: Record<"a" | "b" | "c", Day> = {
     bg: "#f5f3ff",
     exercises: [
       { name: "Romanian deadlift", detail: "4 sets × 6–8 reps · 2 min rest", type: "compound", icon: "deadlift" },
+      { name: "Lying or seated leg curl", detail: "3 sets × 10–12 reps · 60 s rest", type: "isolation", icon: "legCurl" },
       { name: "Pull-ups or lat pulldown", detail: "3 sets × 6–10 reps · 90 s rest", type: "compound", icon: "pullup" },
       { name: "Cable or dumbbell row", detail: "3 sets × 10 reps · 90 s rest", type: "compound", icon: "row" },
       { name: "Face pulls (cable)", detail: "3 sets × 15 reps · 60 s rest", type: "isolation", icon: "facePull" },
@@ -188,16 +263,50 @@ const ROUTINE: Record<"a" | "b" | "c", Day> = {
   c: {
     label: "Day C",
     sub: "Fri / Full Body Power",
-    focus: "Glutes · Chest · Back · Shoulders · Arms · Core",
+    focus: "Glutes · Hamstrings · Chest · Back · Shoulders · Arms",
     color: "#0f766e",
     bg: "#f0fdfa",
     exercises: [
       { name: "Hip thrust or goblet squat", detail: "4 sets × 8–10 reps · 90 s rest", type: "compound", icon: "hipThrust" },
+      { name: "Seated leg curl", detail: "3 sets × 12 reps · 60 s rest", type: "isolation", icon: "legCurl" },
       { name: "Dumbbell bench press", detail: "3 sets × 10 reps · 90 s rest", type: "compound", icon: "bench" },
       { name: "Single-arm dumbbell row", detail: "3 sets × 10 reps each · 60 s rest", type: "compound", icon: "row" },
       { name: "Arnold press", detail: "3 sets × 10 reps · 60 s rest", type: "compound", icon: "shoulderPress" },
       { name: "Superset: curls + skullcrushers", detail: "3 rounds × 10 each · 60 s rest", type: "isolation", icon: "superset" },
       { name: "Cable woodchop or Pallof press", detail: "3 sets × 12 reps each side · 45 s rest", type: "core", icon: "chop" },
+    ],
+  },
+  d: {
+    label: "Day D",
+    sub: "Add-on / Accessory + Weak Points",
+    focus: "Calves · Quads · Glute med · Forearms · Core",
+    color: "#ea580c",
+    bg: "#fff7ed",
+    exercises: [
+      { name: "Standing calf raise", detail: "4 sets × 12–15 reps · 60 s rest", type: "isolation", icon: "calf" },
+      { name: "Seated calf raise", detail: "3 sets × 15–20 reps · 45 s rest", type: "isolation", icon: "calf" },
+      { name: "Leg extension", detail: "3 sets × 12–15 reps · 60 s rest", type: "isolation", icon: "legExtension" },
+      { name: "Cable crunch", detail: "3 sets × 15 reps · 45 s rest", type: "core", icon: "core" },
+      { name: "Hip abduction or banded lateral walk", detail: "3 sets × 15 reps · 45 s rest", type: "isolation", icon: "hipThrust" },
+      { name: "Reverse pec deck or band pull-apart", detail: "3 sets × 15–20 reps · 45 s rest", type: "isolation", icon: "facePull" },
+      { name: "Wrist curl + reverse wrist curl", detail: "2 sets × 15 reps each · 30 s rest", type: "isolation", icon: "curl" },
+    ],
+  },
+  e: {
+    label: "Day E",
+    sub: "Add-on / Chest + Arms Pump",
+    focus: "Chest · Side delts · Biceps · Triceps · Core",
+    color: "#db2777",
+    bg: "#fdf2f8",
+    exercises: [
+      { name: "Incline dumbbell press", detail: "3 sets × 10 reps · 90 s rest", type: "compound", icon: "bench" },
+      { name: "Cable flye (high-to-low)", detail: "3 sets × 12–15 reps · 60 s rest", type: "isolation", icon: "chestFly" },
+      { name: "Cable or dumbbell lateral raise", detail: "3 sets × 15 reps · 45 s rest", type: "isolation", icon: "lateralRaise" },
+      { name: "Incline dumbbell curl", detail: "3 sets × 12 reps · 45 s rest", type: "isolation", icon: "curl" },
+      { name: "Overhead cable tricep extension", detail: "3 sets × 12 reps · 45 s rest", type: "isolation", icon: "tricep" },
+      { name: "Rear-delt cable or reverse fly", detail: "3 sets × 15 reps · 45 s rest", type: "isolation", icon: "facePull" },
+      { name: "Pallof press or ab rollout", detail: "3 sets × 12 reps · 45 s rest", type: "core", icon: "chop" },
+      { name: "Optional: incline treadmill walk", detail: "12–15 min · finisher", type: "cardio", icon: "cardio" },
     ],
   },
 };
@@ -206,20 +315,26 @@ const TIPS = [
   { icon: "🏃", title: "Sport days", body: "Keep gym and run days separate when possible. If you play football or tennis on a gym day, gym first and go –1 set per exercise." },
   { icon: "📈", title: "Progressive overload", body: "Add 1–2 kg/week on big lifts when you hit the top of the rep range cleanly. That's the only rule that really matters." },
   { icon: "🌙", title: "Recovery", body: "7–8 h sleep, protein ~1.6 g/kg bodyweight, and at least one rest day between gym sessions." },
+  { icon: "🍚", title: "Eat to grow", body: "Muscle only grows in a slight surplus — aim +200–300 kcal/day over maintenance and a slow upward trend on the scale. With this much running and sport, that surplus is easy to cancel out. Protein 1.6–2.2 g/kg. Deload every 6–8 weeks if fatigue piles up." },
   { icon: "📅", title: "Example week", body: "Mon: Day A · Tue: run · Wed: Day B · Thu: football/tennis · Fri: Day C · Sat: run or rest · Sun: rest" },
+  { icon: "💪", title: "Big gym week (4–5 days)", body: "Mon: Day A · Tue: Day D (add-on) · Wed: Day B · Thu: Day E (add-on) · Fri: Day C · weekend: rest. Add-on days are deliberately light — drop a set or skip them first if sleep or soreness slips." },
   { icon: "⏱", title: "Stay under 45 mins", body: "Stick to rest times. Drop isolations before compounds if pressed for time." },
 ];
 
 const badgeStyle = (type: ExerciseType) => {
   if (type === "compound") return { background: "#fef3c7", color: "#92400e", border: "1px solid #fde68a" };
   if (type === "isolation") return { background: "#f3f4f6", color: "#4b5563", border: "1px solid #e5e7eb" };
+  if (type === "cardio") return { background: "#ffe4e6", color: "#9f1239", border: "1px solid #fecdd3" };
   return { background: "#dcfce7", color: "#166534", border: "1px solid #bbf7d0" };
 };
 
 const STORAGE_KEY = "gym_routine_checked";
 
-type DayKey = "a" | "b" | "c";
+type DayKey = "a" | "b" | "c" | "d" | "e";
 type TabKey = DayKey | "notes";
+
+const CORE_DAYS: DayKey[] = ["a", "b", "c"];
+const ADDON_DAYS: DayKey[] = ["d", "e"];
 
 export default function GymRoutine() {
   const [tab, setTab] = useState<TabKey>("a");
@@ -229,6 +344,7 @@ export default function GymRoutine() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (raw) setChecked(JSON.parse(raw));
     } catch {}
     setLoaded(true);
@@ -261,13 +377,13 @@ export default function GymRoutine() {
   return (
     <div style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif", maxWidth: 560, margin: "0 auto", padding: "1.5rem 1rem" }}>
       <div style={{ marginBottom: "1.5rem" }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: "#9ca3af", textTransform: "uppercase", marginBottom: 4 }}>3-day programme</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", color: "#9ca3af", textTransform: "uppercase", marginBottom: 4 }}>3-day core · 2 add-on days</div>
         <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, color: "#111827" }}>Full Body Gym Routine</h1>
-        <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>45 min · 3× per week · paired with running & sport</div>
+        <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>45 min · 3× base, scale to 4–5 on big gym weeks</div>
       </div>
 
-      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
-        {(["a", "b", "c", "notes"] as TabKey[]).map((t) => {
+      {(() => {
+        const tabButton = (t: TabKey) => {
           const isActive = tab === t;
           const d = t === "notes" ? null : ROUTINE[t];
           return (
@@ -282,12 +398,28 @@ export default function GymRoutine() {
                 display: "flex", alignItems: "center", gap: 6,
               }}
             >
-              {t !== "notes" && dayDone(t) && <span style={{ fontSize: 11 }}>✓</span>}
+              {t !== "notes" && dayDone(t as DayKey) && <span style={{ fontSize: 11 }}>✓</span>}
               {t === "notes" ? "Notes & tips" : d!.label}
             </button>
           );
-        })}
-      </div>
+        };
+        const divider = (label: string) => (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", margin: "2px 0" }}>
+            <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: "#9ca3af", textTransform: "uppercase" }}>{label}</span>
+            <span style={{ flex: 1, height: 1, background: "#f0f0f0" }} />
+          </div>
+        );
+        return (
+          <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+            {divider("Core week · 3 days")}
+            {CORE_DAYS.map(tabButton)}
+            {divider("Big week add-ons · 4–5 days")}
+            {ADDON_DAYS.map(tabButton)}
+            <div style={{ width: "100%", height: 1 }} />
+            {tabButton("notes")}
+          </div>
+        );
+      })()}
 
       {day && !isNotes && (
         <div>
@@ -327,11 +459,11 @@ export default function GymRoutine() {
                     {isChecked && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                   </div>
                   <div style={{
-                    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                    width: 44, height: 44, borderRadius: 12, flexShrink: 0,
                     background: day.bg, border: `1px solid ${day.color}25`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <ExerciseIcon icon={ex.icon} color={day.color} />
+                    <ExerciseIcon icon={ex.icon} color={day.color} size={28} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#111827", textDecorationLine: isChecked ? "line-through" : "none", textDecorationColor: "#9ca3af" }}>{ex.name}</div>
